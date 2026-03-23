@@ -1,66 +1,62 @@
-const container = document.getElementById('container');
-const rowsPerGroup = 2;
-const colsPerGroup = 4;
-const seatsPerGroup = rowsPerGroup * colsPerGroup; 
-const totalSeats = 40;
-const map = ["seatContainer","corridor","seatContainer"];
-let adjustNumber = 0;
+// ============== Render ghế ==================
+const seatSVG = () => `
+<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" class="seat-svg">
+  <g transform="translate(-32.5 -18.5) scale(5.25) rotate(-90 16.5 11.5)">
+    <path d="M9.3 6 Q9 3 15 3 Q21 3 20.7 6 L21 13.5 A0.3 0.3 0 0 0 21.3 13.5 L21.6 9.6 A0.45 0.45 0 0 1 24 9.6 V15.6 Q24 18 21 18 Q21 19.5 19.5 19.5 H10.5 Q9 19.5 9 18 Q6 18 6 15 V9.6 A0.45 0.45 0 0 1 8.4 9.6 L8.7 13.5 A0.3 0.3 0 0 0 9 13.5 Z" stroke="" stroke-width="0" fill="#24b5c9"/>
+  </g>
+</svg>
+`;
 
-function generateSeat() {
-  const seatContainer = document.createElement('div');
-  seatContainer.classList.add('seat-container');
-  const numGroups = totalSeats / seatsPerGroup;
+function renderSeatMapUI(columns) {
+  const seatMap = renderSeatMapWithRowAisle(columns);
+  const container = document.getElementById('container');
+  container.innerHTML = ''; 
 
-  for (let i = 0; i < totalSeats; i += seatsPerGroup) {
-    const group = document.createElement('div');
-    group.classList.add('seat-group');
-  
-    for (let r = 0; r < rowsPerGroup; r++) {
-      const rowDiv = document.createElement('div');
-      rowDiv.classList.add('seat-row'); 
-  
-      for (let c = 0; c < colsPerGroup; c++) {
-        const seatNumber = i + r * colsPerGroup + c + 1 + adjustNumber;
-        if (seatNumber > i + seatsPerGroup + adjustNumber) break;
-  
-        const seat = document.createElement('button');
-        seat.type = 'button';
-        seat.classList.add(`seat-num${seatNumber}`, 'seat-outline');
-        seat.innerText = seatNumber;
-        rowDiv.append(seat);
-        
-        seat.addEventListener('click', () => {
-          seat.classList.toggle('seat-selected');
-        });
+  const fragment = document.createDocumentFragment();
+
+  seatMap.forEach(columnSeats => {
+    const colDiv = document.createElement('div');
+    colDiv.classList.add('column');
+
+    columnSeats.forEach(seat => {
+      if (seat === null) {
+        const spacer = document.createElement('div');
+        spacer.style.height = '40px';
+        colDiv.appendChild(spacer);
+        return;
       }
-  
-      group.append(rowDiv);
-    }
-    seatContainer.append(group);
-    //chèn table
-    if ((i / seatsPerGroup) % 2 !== 1 && i !== (numGroups - 1) * seatsPerGroup) {
-      seatContainer.append(generateTable());
-    }
-  }
-  return seatContainer;
-}
 
-function generateCorridor() {
-  const seatCorridor = document.createElement('div');
-  seatCorridor.classList.add('seat-corridor');
-  return seatCorridor;
-}
+      const seatWrapper = document.createElement('div');
+      seatWrapper.classList.add('seat-wrapper');
+      if (seat.type === 'Aisle') seatWrapper.classList.add('aisle');
 
-function generateTable(){
-  const seatTable = document.createElement('div');
-  seatTable.classList.add('table');
-  return seatTable
+      // Thêm span inline text seat
+      seatWrapper.innerHTML = `
+        <span class="seat-text">${seat.id}</span>
+        ${seatSVG()}
+      `;
+
+      const svgElement = seatWrapper.querySelector('svg');
+      const pathElement = svgElement.querySelector('path');
+      const spanText = seatWrapper.querySelector('.seat-text');
+      spanText.classList.add('visible');
+
+      // Toggle màu khi click
+      svgElement.addEventListener('click', () => {
+        const currentFill = pathElement.getAttribute('fill');
+        const selectedColor = '#408335';
+        const defaultColor = '#24b5c9';
+        pathElement.setAttribute('fill', currentFill === selectedColor ? defaultColor : selectedColor);
+        spanText.classList.toggle('visible');
+      });
+
+      colDiv.appendChild(seatWrapper);
+    });
+
+    fragment.appendChild(colDiv);
+  });
+
+  container.appendChild(fragment);
 }
-map.forEach(item => {
-  if (item === "seatContainer") {
-    container.append(generateSeat());
-    adjustNumber += totalSeats;
-  } else if (item === "corridor") {
-    container.append(generateCorridor());
-  }
-});
+// Render 20 cột
+renderSeatMapUI(20);
