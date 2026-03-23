@@ -42,7 +42,7 @@ function renderSeatMapUI(columns) {
       spanText.classList.add('visible');
 
       // Toggle màu khi click
-      svgElement.addEventListener('click', () => {
+        svgElement.addEventListener('click', () => {
         const currentFill = pathElement.getAttribute('fill');
         const selectedColor = '#408335';
         const defaultColor = '#24b5c9';
