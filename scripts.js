@@ -1,62 +1,54 @@
-// ============== Render ghế ==================
-const seatSVG = () => `
-<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" class="seat-svg">
-  <g transform="translate(-32.5 -18.5) scale(5.25) rotate(-90 16.5 11.5)">
-    <path d="M9.3 6 Q9 3 15 3 Q21 3 20.7 6 L21 13.5 A0.3 0.3 0 0 0 21.3 13.5 L21.6 9.6 A0.45 0.45 0 0 1 24 9.6 V15.6 Q24 18 21 18 Q21 19.5 19.5 19.5 H10.5 Q9 19.5 9 18 Q6 18 6 15 V9.6 A0.45 0.45 0 0 1 8.4 9.6 L8.7 13.5 A0.3 0.3 0 0 0 9 13.5 Z" stroke="" stroke-width="0" fill="#24b5c9"/>
-  </g>
-</svg>
-`;
+const coachContainer = document.getElementById('coach-container');
+const totalSeat = 40;
+const seatRow = 2;
+const seatCol = 2;
+const seatPerGroup = seatRow * seatCol;
+const seatMap = ["seatArea","Aisle","seatArea"];
+let seatCount = 0;
 
-function renderSeatMapUI(columns) {
-  const seatMap = renderSeatMapWithRowAisle(columns);
-  const container = document.getElementById('container');
-  container.innerHTML = ''; 
-
-  const fragment = document.createDocumentFragment();
-
-  seatMap.forEach(columnSeats => {
-    const colDiv = document.createElement('div');
-    colDiv.classList.add('column');
-
-    columnSeats.forEach(seat => {
-      if (seat === null) {
-        const spacer = document.createElement('div');
-        spacer.style.height = '40px';
-        colDiv.appendChild(spacer);
-        return;
+function seatGenerate() {
+  const seatArea = document.createElement('div');
+  seatArea.classList.add('seatArea');
+  
+  for (let i = 0; i < totalSeat; i+=seatPerGroup){
+    const newGroup = document.createElement('div');
+    newGroup.classList.add('seat-group');
+    
+    for (let c = 0; c < seatCol; c++){
+      const newCol = document.createElement('div');
+      newCol.classList.add('seat-col');
+      
+      for (let r = 0; r < seatRow; r++){
+        const seat = document.createElement('button');
+        seat.classList.add('seat');
+        
+        
+        const seatLabel = document.createElement('span');
+        seatLabel.classList.add('seat-number');
+        seatLabel.textContent = seatCount + 1;
+        seatCount++;
+        
+        seat.append(seatLabel);
+        newCol.append(seat);
       }
-
-      const seatWrapper = document.createElement('div');
-      seatWrapper.classList.add('seat-wrapper');
-      if (seat.type === 'Aisle') seatWrapper.classList.add('aisle');
-
-      // Thêm span inline text seat
-      seatWrapper.innerHTML = `
-        <span class="seat-text">${seat.id}</span>
-        ${seatSVG()}
-      `;
-
-      const svgElement = seatWrapper.querySelector('svg');
-      const pathElement = svgElement.querySelector('path');
-      const spanText = seatWrapper.querySelector('.seat-text');
-      spanText.classList.add('visible');
-
-      // Toggle màu khi click
-        svgElement.addEventListener('click', () => {
-        const currentFill = pathElement.getAttribute('fill');
-        const selectedColor = '#408335';
-        const defaultColor = '#24b5c9';
-        pathElement.setAttribute('fill', currentFill === selectedColor ? defaultColor : selectedColor);
-        spanText.classList.toggle('visible');
-      });
-
-      colDiv.appendChild(seatWrapper);
-    });
-
-    fragment.appendChild(colDiv);
-  });
-
-  container.appendChild(fragment);
+      newGroup.append(newCol);
+    }
+    seatArea.append(newGroup);
+  }
+  coachContainer.append(seatArea);
 }
-// Render 20 cột
-renderSeatMapUI(20);
+function GenerateAisle () {
+  const aisle = document.createElement('div');
+  aisle.classList.add('aisle');
+  coachContainer.append(aisle);
+}
+
+seatMap.forEach( (seatIndex) => {
+  if (seatIndex === "seatArea") {
+    seatGenerate();
+  } else {
+    GenerateAisle();
+  }
+}
+  
+);
