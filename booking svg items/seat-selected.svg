@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 100 100" version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink" transform="matrix(-1,1.2246467991473532e-16,-1.2246467991473532e-16,-1,0,0)">
+  <g stroke="#408335" stroke-width="2" fill="#408335">
+    <path d="M30 10 H80 Q90 10 90 20 V80 Q90 90 80 90 H30 Q10 90 10 70 V30 Q10 10 30 10 z"></path>
+    <path d="M30 10 Q20 10 20 30 V70 Q20 90 30 90 Q10 90 10 70 V30 Q10 10 30 10z"></path>
+  </g>
+</svg>
